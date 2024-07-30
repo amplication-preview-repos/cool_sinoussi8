@@ -1,0 +1,52 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model FreeDay {
+  createdAt   DateTime  @default(now())
+  date        DateTime?
+  description String?
+  id          String    @id @default(cuid())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Approval {
+  approvalDate      DateTime?
+  approvedBy        String?
+  createdAt         DateTime         @default(now())
+  id                String           @id @default(cuid())
+  updatedAt         DateTime         @updatedAt
+  vacationRequest   VacationRequest? @relation(fields: [vacationRequestId], references: [id])
+  vacationRequestId String?
+}
+
+model Employee {
+  createdAt        DateTime          @default(now())
+  department       String?
+  email            String?
+  id               String            @id @default(cuid())
+  name             String?
+  updatedAt        DateTime          @updatedAt
+  vacationRequests VacationRequest[]
+}
+
+model VacationRequest {
+  approvals  Approval[]
+  createdAt  DateTime                   @default(now())
+  employee   Employee?                  @relation(fields: [employeeId], references: [id])
+  employeeId String?
+  endDate    DateTime?
+  id         String                     @id @default(cuid())
+  startDate  DateTime?
+  status     EnumVacationRequestStatus?
+  updatedAt  DateTime                   @updatedAt
+}
+
+enum EnumVacationRequestStatus {
+  Option1
+}
